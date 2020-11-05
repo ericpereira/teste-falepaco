@@ -5,6 +5,8 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
+use Illuminate\Support\Facades\Http;
+
 class CurrencyController extends Controller
 {
     /**
@@ -37,6 +39,20 @@ class CurrencyController extends Controller
     public function show($id)
     {
         //
+    }
+
+    public function list($currency){
+      //pega a lista de cotações baseado na moeda passada
+      try {
+        //carrega os filmes
+        $response = Http::get('https://api.exchangeratesapi.io/latest', [
+            'base' => strtoupper($currency),
+        ]);
+
+          return responder()->success($response->json()['rates'])->respond();
+      } catch (\Throwable $th) {
+          return responder()->error(400, 'Erro ao carregar cotação')->respond(400);
+      }   
     }
 
     /**
